@@ -1,8 +1,15 @@
-//
-//  TaskListAssambly.swift
-//  TaskList
-//
-//  Created by Danil Ryumin on 30.07.2025.
-//
+protocol TaskListAssambly {
+    func configure(view: TaskListViewImpl)
+}
 
-import Foundation
+final class TaskListAssamblyImpl: TaskListAssambly {
+    func configure(view: TaskListViewImpl) {
+        let presenter = TaskListPresenterImpl(view)
+        let interactor = TaskListInteractorImpl(presenter)
+        let router = TasklistRouterImpl(view)
+        
+        view.presenter = presenter
+        presenter.interactor = interactor
+        presenter.router = router
+    }
+}

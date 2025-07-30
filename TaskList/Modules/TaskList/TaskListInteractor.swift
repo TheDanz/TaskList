@@ -1,8 +1,14 @@
-//
-//  TaskListInteractor.swift
-//  TaskList
-//
-//  Created by Danil Ryumin on 30.07.2025.
-//
+import UIKit
 
-import Foundation
+protocol TaskListInteractor: AnyObject {
+    init(_ presenter: TaskListPresenter)
+}
+
+final class TaskListInteractorImpl: TaskListInteractor {
+    
+    weak var presenter: TaskListPresenter?
+        
+    required init(_ presenter: TaskListPresenter) {
+        self.presenter = presenter
+    }
+}

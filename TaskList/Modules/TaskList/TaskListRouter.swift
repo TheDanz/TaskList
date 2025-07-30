@@ -1,8 +1,12 @@
-//
-//  TaskListRouter.swift
-//  TaskList
-//
-//  Created by Danil Ryumin on 30.07.2025.
-//
+protocol TaskListRouter: AnyObject {
+    init(_ viewviewController: TaskListViewImpl)
+}
 
-import Foundation
+final class TasklistRouterImpl: TaskListRouter {
+
+    weak var viewController: TaskListViewImpl?
+
+    init(_ viewController: TaskListViewImpl) {
+        self.viewController = viewController
+    }
+}
