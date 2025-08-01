@@ -1,12 +1,14 @@
 import UIKit
 
 protocol TaskListView: AnyObject {
-    
+    func displayTasks(_ tasks: [TaskListEntity])
 }
 
 final class TaskListViewImpl: UIViewController {
     
-    // MARK: - Property
+    private var tasks: [TaskListEntity] = []
+    
+    // MARK: - Properties
     
     var presenter: TaskListPresenter!
     var assambly: TaskListAssambly = TaskListAssamblyImpl()
@@ -43,6 +45,10 @@ final class TaskListViewImpl: UIViewController {
         super.viewDidLoad()
         assambly.configure(view: self)
         setupUI()
+        
+        Task {
+            await presenter.loadTasks()
+        }
     }
     
     // MARK: - UI
@@ -98,12 +104,17 @@ final class TaskListViewImpl: UIViewController {
 }
 
 extension TaskListViewImpl: TaskListView {
-    
+    func displayTasks(_ tasks: [TaskListEntity]) {
+        self.tasks = tasks
+        DispatchQueue.main.async { [weak self] in
+            self?.tasksTableView.reloadData()
+        }
+    }
 }
 
 extension TaskListViewImpl: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        400
+        tasks.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -111,13 +122,13 @@ extension TaskListViewImpl: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
         
+        cell.configure(with: tasks[indexPath.row])
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         100
     }
-    
 }
 
 final class SearchTextField: UITextField {
@@ -261,5 +272,170 @@ final class FooterView: UIView {
         rightImageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -22).isActive = true
         rightImageView.heightAnchor.constraint(equalToConstant: 24).isActive = true
         rightImageView.widthAnchor.constraint(equalToConstant: 24).isActive = true
+    }
+}
+
+final class TaskTableViewCell: UITableViewCell {
+    static let identifier = "TaskTableViewCell"
+    
+    private lazy var isDoneImageView = UIView.style { (imageView: UIImageView) in
+        let image = UIImage(systemName: "circle")
+        imageView.image = image
+        imageView.tintColor = .uncompletedCircle
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.isDoneButtonPressed))
+        imageView.isUserInteractionEnabled = true
+        imageView.addGestureRecognizer(tapGesture)
+    }
+    
+    private lazy var titleLabel = UIView.style { (label: UILabel) in
+        let font = UIFont.systemFont(ofSize: 16, weight: .semibold)
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: font,
+            .foregroundColor: UIColor.mainText
+        ]
+        let text = "No title"
+        let attributedString = NSAttributedString(string: text, attributes: attributes)
+        label.text = text
+        label.attributedText = attributedString
+        label.numberOfLines = 1
+        label.translatesAutoresizingMaskIntoConstraints = false
+    }
+    
+    private lazy var descriptionLabel = UIView.style { (label: UILabel) in
+        let font = UIFont.systemFont(ofSize: 12, weight: .regular)
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: font,
+            .foregroundColor: UIColor.mainText
+        ]
+        let text = "lond decription"
+        let attributedString = NSAttributedString(string: text, attributes: attributes)
+        label.text = text
+        label.attributedText = attributedString
+        label.numberOfLines = 2
+        label.translatesAutoresizingMaskIntoConstraints = false
+    }
+    
+    private lazy var creationDateLabel = UIView.style { (label: UILabel) in
+        let font = UIFont.systemFont(ofSize: 12, weight: .regular)
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: font,
+            .foregroundColor: UIColor.searchTextFieldElements
+        ]
+        let text = "31/07/2025"
+        let attributedString = NSAttributedString(string: text, attributes: attributes)
+        label.text = text
+        label.attributedText = attributedString
+        label.numberOfLines = 1
+        label.translatesAutoresizingMaskIntoConstraints = false
+    }
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setupUI()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupUI()
+    }
+    
+    func configure(with task: TaskListEntity) {
+        titleLabel.text = task.title
+        descriptionLabel.text = task.description
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd/MM/yy"
+        creationDateLabel.text = formatter.string(from: task.creationDate)
+                
+        if task.isDone {
+            isDoneImageView.image = UIImage(systemName: "checkmark.circle")
+            isDoneImageView.tintColor = .golden
+            titleLabel.textColor = .searchTextFieldElements
+            descriptionLabel.textColor = .searchTextFieldElements
+            
+            let text = titleLabel.text ?? ""
+            let attributedString = NSAttributedString(
+                string: text,
+                attributes: [
+                    .strikethroughStyle: NSUnderlineStyle.single.rawValue
+                ]
+            )
+
+            titleLabel.attributedText = attributedString
+            
+            let destext = descriptionLabel.text ?? ""
+            let attributedStringdes = NSAttributedString(
+                string: destext,
+                attributes: [
+                    .strikethroughStyle: NSUnderlineStyle.single.rawValue
+                ]
+            )
+
+            descriptionLabel.attributedText = attributedStringdes
+            
+        } else {
+            isDoneImageView.image = UIImage(systemName: "circle")
+            isDoneImageView.tintColor = .uncompletedCircle
+            titleLabel.textColor = .mainText
+            descriptionLabel.textColor = .mainText
+        }
+    }
+    
+    @objc
+    private func isDoneButtonPressed() {
+        if let currentImage = isDoneImageView.image,
+           currentImage == UIImage(systemName: "checkmark.circle") {
+            isDoneImageView.image = UIImage(systemName: "checkmark.circle")
+            isDoneImageView.tintColor = .systemGreen
+        } else {
+            isDoneImageView.image = UIImage(systemName: "circle")
+            isDoneImageView.tintColor = .uncompletedCircle
+        }
+    }
+    
+    private func setupUI() {
+        setupView()
+        setupAutoLayout()
+    }
+    
+    private func setupView() {
+        backgroundColor = .mainBackground
+        addSubview(isDoneImageView)
+        addSubview(titleLabel)
+        addSubview(descriptionLabel)
+        addSubview(creationDateLabel)
+    }
+    
+    private func setupAutoLayout() {
+        setupIsDoneImageViewConstraints()
+        setupTitleLabelConstraints()
+        setupDescriptionLabelConstraints()
+        setupCreationDateLabelConstraints()
+    }
+    
+    private func setupIsDoneImageViewConstraints() {
+        isDoneImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20).isActive = true
+        isDoneImageView.topAnchor.constraint(equalTo: topAnchor, constant: 12).isActive = true
+        isDoneImageView.widthAnchor.constraint(equalToConstant: 24).isActive = true
+        isDoneImageView.heightAnchor.constraint(equalToConstant: 24).isActive = true
+    }
+    
+    private func setupTitleLabelConstraints() {
+        titleLabel.centerYAnchor.constraint(equalTo: isDoneImageView.centerYAnchor).isActive = true
+        titleLabel.leadingAnchor.constraint(equalTo: isDoneImageView.trailingAnchor, constant: 8).isActive = true
+        titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20).isActive = true
+    }
+    
+    private func setupDescriptionLabelConstraints() {
+        descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 6).isActive = true
+        descriptionLabel.leadingAnchor.constraint(equalTo: isDoneImageView.trailingAnchor, constant: 8).isActive = true
+        descriptionLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20).isActive = true
+    }
+    
+    private func setupCreationDateLabelConstraints() {
+        creationDateLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 6).isActive = true
+        creationDateLabel.leadingAnchor.constraint(equalTo: isDoneImageView.trailingAnchor, constant: 8).isActive = true
+        creationDateLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20).isActive = true
     }
 }

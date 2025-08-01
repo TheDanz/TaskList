@@ -1,5 +1,8 @@
 protocol TaskListPresenter: AnyObject {
     init(_ view: TaskListView)
+    
+    func loadTasks() async
+    func didFetchTasks(_ tasks: [TaskListEntity])
 }
 
 final class TaskListPresenterImpl: TaskListPresenter {
@@ -10,5 +13,13 @@ final class TaskListPresenterImpl: TaskListPresenter {
     
     required init(_ view: TaskListView) {
         self.view = view
+    }
+
+    func loadTasks() async {
+        await interactor.fetchTasks()
+    }
+    
+    func didFetchTasks(_ tasks: [TaskListEntity]) {
+        view?.displayTasks(tasks)
     }
 }
