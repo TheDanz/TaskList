@@ -7,6 +7,7 @@ protocol TaskListView: AnyObject {
 final class TaskListViewImpl: UIViewController {
     
     private var tasks: [TaskListEntity] = []
+    private var userDefaults = UserDefaultsService()
     
     // MARK: - Properties
     
@@ -47,7 +48,11 @@ final class TaskListViewImpl: UIViewController {
         setupUI()
         
         Task {
-            await presenter.loadTasks()
+            if userDefaults.isFirstLaunch {
+                userDefaults.isFirstLaunch = false
+                print("first")
+                await presenter.loadTasks()
+            }
         }
     }
     
