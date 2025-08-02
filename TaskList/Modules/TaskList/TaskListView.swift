@@ -130,10 +130,6 @@ extension TaskListViewImpl: UITableViewDelegate, UITableViewDataSource {
         cell.configure(with: tasks[indexPath.row])
         return cell
     }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        100
-    }
 }
 
 final class SearchTextField: UITextField {
@@ -442,5 +438,6 @@ final class TaskTableViewCell: UITableViewCell {
         creationDateLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 6).isActive = true
         creationDateLabel.leadingAnchor.constraint(equalTo: isDoneImageView.trailingAnchor, constant: 8).isActive = true
         creationDateLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20).isActive = true
+        creationDateLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12).isActive = true
     }
 }
