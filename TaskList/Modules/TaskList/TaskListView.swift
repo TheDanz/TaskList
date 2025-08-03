@@ -50,7 +50,6 @@ final class TaskListViewImpl: UIViewController {
         Task {
             if userDefaults.isFirstLaunch {
                 userDefaults.isFirstLaunch = false
-                print("first")
                 await presenter.loadTasks()
             }
         }
@@ -129,6 +128,26 @@ extension TaskListViewImpl: UITableViewDelegate, UITableViewDataSource {
         
         cell.configure(with: tasks[indexPath.row])
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        
+        return UIContextMenuConfiguration(identifier: indexPath as NSCopying, previewProvider: nil) { _ in
+            
+            let editAction = UIAction(title: "Редактировать", image: .editIcon) { action in
+                self.presenter.editContextMenuButtonPressed(for: self.tasks[indexPath.row])
+            }
+            
+            let shareAction = UIAction(title: "Поделиться", image: .shareIcon) { action in
+                self.presenter.shareContextMenuButtonPressed(for: self.tasks[indexPath.row])
+            }
+
+            let deleteAction = UIAction(title: "Удалить", image: .deleteIcon, attributes: .destructive) { action in
+                self.presenter.deleteContextMenuButtonPressed(for: self.tasks[indexPath.row])
+            }
+            
+            return UIMenu(children: [editAction, shareAction, deleteAction])
+        }
     }
 }
 
@@ -402,6 +421,7 @@ final class TaskTableViewCell: UITableViewCell {
     
     private func setupView() {
         backgroundColor = .mainBackground
+        selectionStyle = .none
         addSubview(isDoneImageView)
         addSubview(titleLabel)
         addSubview(descriptionLabel)

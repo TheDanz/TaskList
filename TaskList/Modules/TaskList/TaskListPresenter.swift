@@ -3,6 +3,10 @@ protocol TaskListPresenter: AnyObject {
     
     func loadTasks() async
     func didFetchTasks(_ tasks: [TaskListEntity])
+    
+    func editContextMenuButtonPressed(for task: TaskListEntity)
+    func shareContextMenuButtonPressed(for task: TaskListEntity)
+    func deleteContextMenuButtonPressed(for task: TaskListEntity)
 }
 
 final class TaskListPresenterImpl: TaskListPresenter {
@@ -22,4 +26,10 @@ final class TaskListPresenterImpl: TaskListPresenter {
     func didFetchTasks(_ tasks: [TaskListEntity]) {
         view?.displayTasks(tasks)
     }
+    
+    func editContextMenuButtonPressed(for task: TaskListEntity) { }
+    
+    func shareContextMenuButtonPressed(for task: TaskListEntity) { }
+    
+    func deleteContextMenuButtonPressed(for task: TaskListEntity) { }
 }
