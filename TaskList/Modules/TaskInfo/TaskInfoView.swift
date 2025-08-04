@@ -1,10 +1,15 @@
 import UIKit
 
-protocol TaskInfoView {
+protocol TaskInfoView: AnyObject {
     
 }
 
-final class TaskInfoViewImpl: UIViewController {
+final class TaskInfoViewImpl: UIViewController, TaskInfoView {
+    
+    // MARK: - Properties
+    
+    var presenter: TaskInfoPresenter!
+    var assambly: TaskInfoAssambly = TaskInfoAssamblyImpl()
     
     // MARK: - Views
     
@@ -50,6 +55,7 @@ final class TaskInfoViewImpl: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        assambly.configure(view: self)
         setupUI()
     }
     

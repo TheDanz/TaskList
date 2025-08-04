@@ -1,8 +1,14 @@
-//
-//  TaskInfoPresenter.swift
-//  TaskList
-//
-//  Created by Danil Ryumin on 30.07.2025.
-//
+protocol TaskInfoPresenter: AnyObject {
+    init(_ view: TaskInfoView)
+}
 
-import Foundation
+final class TaskInfoPresenterImpl: TaskInfoPresenter {
+    
+    weak var view: TaskInfoView?
+    var interactor: TaskInfoInteractor!
+    var router: TaskInfoRouter!
+    
+    required init(_ view: TaskInfoView) {
+        self.view = view
+    }
+}

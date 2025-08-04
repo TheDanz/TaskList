@@ -1,8 +1,7 @@
-//
-//  TaskInfoInteractor.swift
-//  TaskList
-//
-//  Created by Danil Ryumin on 30.07.2025.
-//
+protocol TaskInfoInteractor: AnyObject {
+    
+}
 
-import Foundation
+final class TaskInfoInteractorImpl: TaskInfoInteractor {
+    
+}

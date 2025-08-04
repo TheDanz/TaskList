@@ -1,8 +1,11 @@
-//
-//  TaskInfoRouter.swift
-//  TaskList
-//
-//  Created by Danil Ryumin on 30.07.2025.
-//
+protocol TaskInfoRouter: AnyObject {
+    init(_ viewController: TaskInfoViewImpl)
+}
 
-import Foundation
+final class TaskInfoRouterImpl: TaskInfoRouter {
+    weak var viewController: TaskInfoViewImpl?
+
+    init(_ viewController: TaskInfoViewImpl) {
+        self.viewController = viewController
+    }
+}
