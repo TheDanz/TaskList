@@ -11,6 +11,8 @@ protocol TaskListPresenter: AnyObject {
     func numberOfTasks(in section: Int) -> Int
     func getTask(at: IndexPath) -> TaskListEntity
     func deleteTask(at: IndexPath)
+    
+    func didSelectTask(_ task: TaskListEntity)
 }
 
 final class TaskListPresenterImpl: TaskListPresenter {
@@ -50,5 +52,9 @@ final class TaskListPresenterImpl: TaskListPresenter {
         interactor.deleteTask(at: at)
         view?.deleteRows(at: [at])
         view?.updateNumberOfTasksLabel(with: interactor.taskCountWithWord)
+    }
+    
+    func didSelectTask(_ task: TaskListEntity) {
+        router.openTaskInfo(about: task)
     }
 }

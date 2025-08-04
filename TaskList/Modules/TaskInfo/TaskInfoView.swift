@@ -1,8 +1,24 @@
-//
-//  TaskInfoView.swift
-//  TaskList
-//
-//  Created by Danil Ryumin on 30.07.2025.
-//
+import UIKit
 
-import Foundation
+protocol TaskInfoView {
+    
+}
+
+final class TaskInfoViewImpl: UIViewController {
+    
+    // MARK: - Inits
+    
+    init(task: TaskListEntity) {
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+    
+    // MARK: - ViewController LifeCycle
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+}

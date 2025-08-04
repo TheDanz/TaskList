@@ -163,6 +163,11 @@ extension TaskListViewImpl: UITableViewDelegate, UITableViewDataSource {
             break
         }
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let task = presenter.getTask(at: indexPath)
+        presenter.didSelectTask(task)
+    }
 }
 
 final class SearchTextField: UITextField {
