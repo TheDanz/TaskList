@@ -32,6 +32,7 @@ final class TaskListPresenterImpl: TaskListPresenter {
     func loadInitialTasks() async {
         await interactor.loadInitialTasks()
         view?.reloadData()
+        view?.updateNumberOfTasksLabel(with: interactor.taskCountWithWord)
     }
     
     func editContextMenuButtonPressed(for task: TaskListEntity) { }
@@ -48,5 +49,6 @@ final class TaskListPresenterImpl: TaskListPresenter {
     func deleteTask(at: IndexPath) {
         interactor.deleteTask(at: at)
         view?.deleteRows(at: [at])
+        view?.updateNumberOfTasksLabel(with: interactor.taskCountWithWord)
     }
 }

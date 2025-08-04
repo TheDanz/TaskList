@@ -2,6 +2,7 @@ import UIKit
 
 protocol TaskListView: AnyObject {
     func reloadData()
+    func updateNumberOfTasksLabel(with text: String)
     func deleteRows(at: [IndexPath])
 }
 
@@ -28,7 +29,7 @@ final class TaskListViewImpl: UIViewController {
     }
     
     private lazy var searchTextField = SearchTextField()
-    private lazy var footerView = FooterView()
+    lazy var footerView = FooterView()
     
     private lazy var tasksTableView = UIView.style { (tableView: UITableView) in
         tableView.dataSource = self
@@ -104,6 +105,12 @@ extension TaskListViewImpl: TaskListView {
     func reloadData() {
         DispatchQueue.main.async { [weak self] in
             self?.tasksTableView.reloadData()
+        }
+    }
+    
+    func updateNumberOfTasksLabel(with text: String) {
+        DispatchQueue.main.async { [weak self] in
+            self?.footerView.numberOfTasksLabel.text = text
         }
     }
     
@@ -236,7 +243,7 @@ final class FooterView: UIView {
     
     // MARK: - Views
     
-    private lazy var numberOfTasksLabel = UIView.style { (label: UILabel) in
+    lazy var numberOfTasksLabel = UIView.style { (label: UILabel) in
         let font = UIFont.systemFont(ofSize: 11, weight: .regular)
         let attributes: [NSAttributedString.Key: Any] = [
             .font: font,

@@ -4,7 +4,9 @@ import CoreData
 protocol TaskListInteractor: AnyObject {    
     func loadInitialTasks() async
     
-    func numberOfTasks(in section: Int) -> Int
+    var taskCountWithWord: String { get }
+    
+    func numberOfTasks(in section: Int?) -> Int
     func getTask(at: IndexPath) -> TaskListEntity
     func deleteTask(at: IndexPath)
 }
@@ -27,7 +29,14 @@ final class TaskListInteractorImpl: NSObject, TaskListInteractor {
         setupFetchedResultsContoller()
     }
     
-    // MARK: Internal Methods
+    // MARK: - Computed Properties
+    
+    var taskCountWithWord: String {
+        let numberOfTasks = numberOfTasks(in: 0)
+        return "\(numberOfTasks) \(taskWord(for: numberOfTasks))"
+    }
+    
+    // MARK: - Internal Methods
     
     func loadInitialTasks() async {
         
@@ -50,8 +59,12 @@ final class TaskListInteractorImpl: NSObject, TaskListInteractor {
         }
     }
     
-    func numberOfTasks(in section: Int) -> Int {
-        fetchedResultsController.sections?[section].numberOfObjects ?? 0
+    func numberOfTasks(in section: Int? = nil) -> Int {
+        if let section {
+            return fetchedResultsController.sections?[section].numberOfObjects ?? 0
+        } else {
+            return fetchedResultsController.sections?.reduce(0) { $0 + $1.numberOfObjects } ?? 0
+        }
     }
     
     func getTask(at: IndexPath) -> TaskListEntity {
@@ -90,7 +103,27 @@ final class TaskListInteractorImpl: NSObject, TaskListInteractor {
         
         try? fetchedResultsController.performFetch()
     }
+    
+    private func taskWord(for count: Int) -> String {
+        let lastTwoDigits = count % 100
+        let lastDigit = count % 10
+        
+        if lastTwoDigits >= 11 && lastTwoDigits <= 14 {
+            return "Задач"
+        }
+        
+        switch lastDigit {
+        case 1:
+            return "Задача"
+        case 2, 3, 4:
+            return "Задачи"
+        default:
+            return "Задач"
+        }
+    }
 }
+
+// MARK: - NSFetchedResultsControllerDelegate
 
 extension TaskListInteractorImpl: NSFetchedResultsControllerDelegate {
     func controller(
