@@ -1,11 +1,10 @@
 import CoreData
 
-final class CoreDataService: NSObject {
+final class CoreDataService {
     
     // MARK: Properties
     
-    private var fetchLimit = 1000
-    private lazy var viewContext = persistentContainer.viewContext
+    lazy var viewContext = persistentContainer.viewContext
     
     private lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "TaskModel")
@@ -16,15 +15,6 @@ final class CoreDataService: NSObject {
         })
         return container
     }()
-    
-    var fetchedResultsController: NSFetchedResultsController<TaskModel>!
-    
-    // MARK: Inits
-
-    override init() {
-        super.init()
-        setupFetchedResultsContoller()
-    }
     
     // MARK: Internal Methods
     
@@ -43,25 +33,10 @@ final class CoreDataService: NSObject {
         for task in tasks {
             createTask(task)
         }
-        
-        try? fetchedResultsController.performFetch()
     }
     
-    // MARK: - Private Methods
-    
-    private func setupFetchedResultsContoller() {
-        let fetchRequest: NSFetchRequest<TaskModel> = TaskModel.fetchRequest()
-        let sortDescriptor = NSSortDescriptor(key: "id", ascending: true)
-        fetchRequest.sortDescriptors = [sortDescriptor]
-        fetchRequest.fetchLimit = fetchLimit
-        
-        fetchedResultsController = NSFetchedResultsController(
-            fetchRequest: fetchRequest,
-            managedObjectContext: viewContext,
-            sectionNameKeyPath: nil,
-            cacheName: nil
-        )
-        
-        try? fetchedResultsController.performFetch()
+    func deleteTask(object: TaskModel) {
+        viewContext.delete(object)
+        try? viewContext.save()
     }
 }

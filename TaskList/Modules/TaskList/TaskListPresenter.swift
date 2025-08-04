@@ -8,10 +8,10 @@ protocol TaskListPresenter: AnyObject {
     
     func editContextMenuButtonPressed(for task: TaskListEntity)
     func shareContextMenuButtonPressed(for task: TaskListEntity)
-    func deleteContextMenuButtonPressed(for task: TaskListEntity)
     
     func numberOfTasks(in section: Int) -> Int
     func getTask(at: IndexPath) -> TaskListEntity
+    func deleteTask(at: IndexPath)
 }
 
 final class TaskListPresenterImpl: TaskListPresenter {
@@ -40,7 +40,6 @@ final class TaskListPresenterImpl: TaskListPresenter {
     
     func editContextMenuButtonPressed(for task: TaskListEntity) { }
     func shareContextMenuButtonPressed(for task: TaskListEntity) { }
-    func deleteContextMenuButtonPressed(for task: TaskListEntity) { }
     
     func numberOfTasks(in section: Int) -> Int {
         interactor.numberOfTasks(in: section)
@@ -48,5 +47,10 @@ final class TaskListPresenterImpl: TaskListPresenter {
     
     func getTask(at: IndexPath) -> TaskListEntity {
         interactor.getTask(at: at)
+    }
+    
+    func deleteTask(at: IndexPath) {
+        interactor.deleteTask(at: at)
+        view?.deleteRows(at: [at])
     }
 }

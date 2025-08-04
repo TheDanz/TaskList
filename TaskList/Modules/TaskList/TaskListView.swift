@@ -2,6 +2,7 @@ import UIKit
 
 protocol TaskListView: AnyObject {
     func reloadData()
+    func deleteRows(at: [IndexPath])
 }
 
 final class TaskListViewImpl: UIViewController {
@@ -105,6 +106,10 @@ extension TaskListViewImpl: TaskListView {
             self?.tasksTableView.reloadData()
         }
     }
+    
+    func deleteRows(at: [IndexPath]) {
+        tasksTableView.deleteRows(at: at, with: .automatic)
+    }
 }
 
 extension TaskListViewImpl: UITableViewDelegate, UITableViewDataSource {
@@ -136,10 +141,19 @@ extension TaskListViewImpl: UITableViewDelegate, UITableViewDataSource {
             }
 
             let deleteAction = UIAction(title: "Удалить", image: .deleteIcon, attributes: .destructive) { action in
-                self.presenter.deleteContextMenuButtonPressed(for: self.presenter.getTask(at: indexPath))
+                self.presenter.deleteTask(at: indexPath)
             }
             
             return UIMenu(children: [editAction, shareAction, deleteAction])
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        switch editingStyle {
+        case .delete:
+            presenter.deleteTask(at: indexPath)
+        default:
+            break
         }
     }
 }
