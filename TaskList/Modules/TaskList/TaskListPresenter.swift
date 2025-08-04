@@ -4,7 +4,6 @@ protocol TaskListPresenter: AnyObject {
     init(_ view: TaskListView)
     
     func loadInitialTasks() async
-    func didLoadInitialTasks()
     
     func editContextMenuButtonPressed(for task: TaskListEntity)
     func shareContextMenuButtonPressed(for task: TaskListEntity)
@@ -32,9 +31,6 @@ final class TaskListPresenterImpl: TaskListPresenter {
 
     func loadInitialTasks() async {
         await interactor.loadInitialTasks()
-    }
-    
-    func didLoadInitialTasks() {
         view?.reloadData()
     }
     

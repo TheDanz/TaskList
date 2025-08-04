@@ -1,9 +1,7 @@
 import UIKit
 import CoreData
 
-protocol TaskListInteractor: AnyObject {
-    init(_ presenter: TaskListPresenter)
-    
+protocol TaskListInteractor: AnyObject {    
     func loadInitialTasks() async
     
     func numberOfTasks(in section: Int) -> Int
@@ -14,9 +12,7 @@ protocol TaskListInteractor: AnyObject {
 final class TaskListInteractorImpl: NSObject, TaskListInteractor {
     
     // MARK: - Properties
-    
-    weak var presenter: TaskListPresenter?
-    
+        
     private var networkRepository = NetworkRepository(networkService: NetworkService())
     private var userDefaults = UserDefaultsService()
     private var coreData = CoreDataService()
@@ -26,9 +22,8 @@ final class TaskListInteractorImpl: NSObject, TaskListInteractor {
     
     // MARK: Inits
             
-    required init(_ presenter: TaskListPresenter) {
+    override init() {
         super.init()
-        self.presenter = presenter
         setupFetchedResultsContoller()
     }
     
@@ -50,7 +45,6 @@ final class TaskListInteractorImpl: NSObject, TaskListInteractor {
                 )
             }
             coreData.createTasks(entities)
-            presenter?.didLoadInitialTasks()
         } catch {
             print(error.localizedDescription)
         }

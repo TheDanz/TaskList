@@ -5,7 +5,7 @@ protocol TaskListAssambly {
 final class TaskListAssamblyImpl: TaskListAssambly {
     func configure(view: TaskListViewImpl) {
         let presenter = TaskListPresenterImpl(view)
-        let interactor = TaskListInteractorImpl(presenter)
+        let interactor = TaskListInteractorImpl()
         let router = TasklistRouterImpl(view)
         
         view.presenter = presenter
