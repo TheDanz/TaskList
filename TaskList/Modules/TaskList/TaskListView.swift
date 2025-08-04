@@ -1,13 +1,10 @@
 import UIKit
 
 protocol TaskListView: AnyObject {
-    func displayTasks(_ tasks: [TaskListEntity])
+    func reloadData()
 }
 
 final class TaskListViewImpl: UIViewController {
-    
-    private var tasks: [TaskListEntity] = []
-    private var userDefaults = UserDefaultsService()
     
     // MARK: - Properties
     
@@ -46,13 +43,8 @@ final class TaskListViewImpl: UIViewController {
         super.viewDidLoad()
         assambly.configure(view: self)
         setupUI()
-        
-        Task {
-            if userDefaults.isFirstLaunch {
-                userDefaults.isFirstLaunch = false
-                await presenter.loadTasks()
-            }
-        }
+
+        Task { await presenter.loadInitialTasks() }
     }
     
     // MARK: - UI
@@ -108,8 +100,7 @@ final class TaskListViewImpl: UIViewController {
 }
 
 extension TaskListViewImpl: TaskListView {
-    func displayTasks(_ tasks: [TaskListEntity]) {
-        self.tasks = tasks
+    func reloadData() {
         DispatchQueue.main.async { [weak self] in
             self?.tasksTableView.reloadData()
         }
@@ -118,7 +109,7 @@ extension TaskListViewImpl: TaskListView {
 
 extension TaskListViewImpl: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        tasks.count
+        presenter.numberOfTasks(in: section)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -126,7 +117,9 @@ extension TaskListViewImpl: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
         
-        cell.configure(with: tasks[indexPath.row])
+        let task = presenter.getTask(at: indexPath)
+        cell.configure(with: task)
+        
         return cell
     }
     
@@ -135,15 +128,15 @@ extension TaskListViewImpl: UITableViewDelegate, UITableViewDataSource {
         return UIContextMenuConfiguration(identifier: indexPath as NSCopying, previewProvider: nil) { _ in
             
             let editAction = UIAction(title: "Редактировать", image: .editIcon) { action in
-                self.presenter.editContextMenuButtonPressed(for: self.tasks[indexPath.row])
+                self.presenter.editContextMenuButtonPressed(for: self.presenter.getTask(at: indexPath))
             }
             
             let shareAction = UIAction(title: "Поделиться", image: .shareIcon) { action in
-                self.presenter.shareContextMenuButtonPressed(for: self.tasks[indexPath.row])
+                self.presenter.shareContextMenuButtonPressed(for: self.presenter.getTask(at: indexPath))
             }
 
             let deleteAction = UIAction(title: "Удалить", image: .deleteIcon, attributes: .destructive) { action in
-                self.presenter.deleteContextMenuButtonPressed(for: self.tasks[indexPath.row])
+                self.presenter.deleteContextMenuButtonPressed(for: self.presenter.getTask(at: indexPath))
             }
             
             return UIMenu(children: [editAction, shareAction, deleteAction])
