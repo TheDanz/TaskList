@@ -1,7 +1,7 @@
 protocol TaskListRouter: AnyObject {
     init(_ viewController: TaskListViewImpl)
     
-    func openTaskInfo(about task: TaskListEntity)
+    func openTaskInfo(about task: TaskEntity)
 }
 
 final class TasklistRouterImpl: TaskListRouter {
@@ -12,7 +12,7 @@ final class TasklistRouterImpl: TaskListRouter {
         self.viewController = viewController
     }
     
-    func openTaskInfo(about task: TaskListEntity) {
+    func openTaskInfo(about task: TaskEntity) {
         let vc = TaskInfoViewImpl(task: task)
         viewController?.navigationController?.pushViewController(vc, animated: true)
     }

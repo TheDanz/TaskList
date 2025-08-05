@@ -7,7 +7,7 @@ protocol TaskListInteractor: AnyObject {
     var taskCountWithWord: String { get }
     
     func numberOfTasks(in section: Int?) -> Int
-    func getTask(at: IndexPath) -> TaskListEntity
+    func getTask(at: IndexPath) -> TaskEntity
     func deleteTask(at: IndexPath)
 }
 
@@ -17,7 +17,7 @@ final class TaskListInteractorImpl: NSObject, TaskListInteractor {
         
     private var networkRepository = NetworkRepository(networkService: NetworkService())
     private var userDefaults = UserDefaultsService()
-    private var coreData = CoreDataService()
+    private var coreData = CoreDataService.shared
     
     private var fetchLimit = 1000
     var fetchedResultsController: NSFetchedResultsController<TaskModel>!
@@ -46,7 +46,8 @@ final class TaskListInteractorImpl: NSObject, TaskListInteractor {
         do {
             let response = try await networkRepository.fetchTasks()
             let entities = response.todos.map {
-                TaskListEntityImpl(
+                TaskEntityImpl(
+                    id: String($0.id),
                     title: "Задача #" + String($0.id),
                     description: $0.todo,
                     creationDate: Date(),
@@ -67,11 +68,11 @@ final class TaskListInteractorImpl: NSObject, TaskListInteractor {
         }
     }
     
-    func getTask(at: IndexPath) -> TaskListEntity {
-        
+    func getTask(at: IndexPath) -> TaskEntity {
         let taskModel = fetchedResultsController.object(at: at)
         
-        return TaskListEntityImpl(
+        return TaskEntityImpl(
+            id: taskModel.id,
             title: taskModel.title,
             description: taskModel.depiction,
             creationDate: taskModel.creationDate,

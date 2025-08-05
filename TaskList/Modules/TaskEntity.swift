@@ -1,13 +1,15 @@
 import Foundation
 
-protocol TaskListEntity {
+protocol TaskEntity {
+    var id: String { get }
     var title: String { get }
     var description: String { get }
     var creationDate: Date { get }
     var isDone: Bool { get }
 }
 
-struct TaskListEntityImpl: TaskListEntity {
+struct TaskEntityImpl: TaskEntity {
+    var id: String
     var title: String
     var description: String
     var creationDate: Date

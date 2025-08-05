@@ -41,6 +41,13 @@ final class TaskListViewImpl: UIViewController {
     
     // MARK: ViewController LifeCycle
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        DispatchQueue.main.async { [weak self] in
+            self?.tasksTableView.reloadData()
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         assambly.configure(view: self)
@@ -380,7 +387,7 @@ final class TaskTableViewCell: UITableViewCell {
         setupUI()
     }
     
-    func configure(with task: TaskListEntity) {
+    func configure(with task: TaskEntity) {
         titleLabel.text = task.title
         descriptionLabel.text = task.description
         let formatter = DateFormatter()

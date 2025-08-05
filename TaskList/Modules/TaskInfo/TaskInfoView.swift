@@ -11,12 +11,20 @@ final class TaskInfoViewImpl: UIViewController, TaskInfoView {
     var presenter: TaskInfoPresenter!
     var assambly: TaskInfoAssambly = TaskInfoAssamblyImpl()
     
+    private var task: TaskEntity? {
+        didSet {
+            guard let task else { return }
+            configure(with: task)
+        }
+    }
+    
     // MARK: - Views
     
     private lazy var titleTextView: UITextView = .style {
         $0.font = UIFont.systemFont(ofSize: 34, weight: .bold)
         $0.textColor = .mainText
         $0.backgroundColor = .mainBackground
+        $0.delegate = self
         $0.isScrollEnabled = false
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
@@ -32,19 +40,17 @@ final class TaskInfoViewImpl: UIViewController, TaskInfoView {
         $0.font = UIFont.systemFont(ofSize: 16, weight: .regular)
         $0.textColor = .mainText
         $0.backgroundColor = .mainBackground
+        $0.delegate = self
         $0.isScrollEnabled = false
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
     
     // MARK: - Inits
     
-    init(task: TaskListEntity) {
+    init(task: TaskEntity) {
         super.init(nibName: nil, bundle: nil)
-        titleTextView.text = task.title
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd/MM/yy"
-        creationDateLabel.text = formatter.string(from: task.creationDate)
-        descriptionTextView.text = task.description
+        self.task = task
+        configure(with: task)
     }
     
     required init?(coder: NSCoder) {
@@ -61,6 +67,14 @@ final class TaskInfoViewImpl: UIViewController, TaskInfoView {
     
     // MARK: - UI
     
+    private func configure(with task: TaskEntity) {
+        titleTextView.text = task.title
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd/MM/yy"
+        creationDateLabel.text = formatter.string(from: task.creationDate)
+        descriptionTextView.text = task.description
+    }
+ 
     private func setupUI() {
         setupView()
         setupNavigationController()
@@ -103,5 +117,22 @@ final class TaskInfoViewImpl: UIViewController, TaskInfoView {
         descriptionTextView.topAnchor.constraint(equalTo: creationDateLabel.bottomAnchor, constant: 16).isActive = true
         descriptionTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
         descriptionTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
+    }
+}
+
+extension TaskInfoViewImpl: UITextViewDelegate {
+    func textViewDidChange(_ textView: UITextView) {
+        switch textView {
+        case titleTextView:
+            if let task {
+                presenter.titleTextViewDidChange(with: titleTextView.text, for: task)
+            }
+        case descriptionTextView:
+            if let task {
+                presenter.descriptionTextViewDidChange(with: descriptionTextView.text, for: task)
+            }
+        default:
+            break
+        }
     }
 }

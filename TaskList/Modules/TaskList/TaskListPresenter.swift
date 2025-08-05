@@ -5,14 +5,14 @@ protocol TaskListPresenter: AnyObject {
     
     func loadInitialTasks() async
     
-    func editContextMenuButtonPressed(for task: TaskListEntity)
-    func shareContextMenuButtonPressed(for task: TaskListEntity)
+    func editContextMenuButtonPressed(for task: TaskEntity)
+    func shareContextMenuButtonPressed(for task: TaskEntity)
     
     func numberOfTasks(in section: Int) -> Int
-    func getTask(at: IndexPath) -> TaskListEntity
+    func getTask(at: IndexPath) -> TaskEntity
     func deleteTask(at: IndexPath)
     
-    func didSelectTask(_ task: TaskListEntity)
+    func didSelectTask(_ task: TaskEntity)
 }
 
 final class TaskListPresenterImpl: TaskListPresenter {
@@ -37,14 +37,14 @@ final class TaskListPresenterImpl: TaskListPresenter {
         view?.updateNumberOfTasksLabel(with: interactor.taskCountWithWord)
     }
     
-    func editContextMenuButtonPressed(for task: TaskListEntity) { }
-    func shareContextMenuButtonPressed(for task: TaskListEntity) { }
+    func editContextMenuButtonPressed(for task: TaskEntity) { }
+    func shareContextMenuButtonPressed(for task: TaskEntity) { }
     
     func numberOfTasks(in section: Int) -> Int {
         interactor.numberOfTasks(in: section)
     }
     
-    func getTask(at: IndexPath) -> TaskListEntity {
+    func getTask(at: IndexPath) -> TaskEntity {
         interactor.getTask(at: at)
     }
     
@@ -54,7 +54,7 @@ final class TaskListPresenterImpl: TaskListPresenter {
         view?.updateNumberOfTasksLabel(with: interactor.taskCountWithWord)
     }
     
-    func didSelectTask(_ task: TaskListEntity) {
+    func didSelectTask(_ task: TaskEntity) {
         router.openTaskInfo(about: task)
     }
 }
