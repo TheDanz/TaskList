@@ -37,8 +37,13 @@ final class TaskListPresenterImpl: TaskListPresenter {
         view?.updateNumberOfTasksLabel(with: interactor.taskCountWithWord)
     }
     
-    func editContextMenuButtonPressed(for task: TaskEntity) { }
-    func shareContextMenuButtonPressed(for task: TaskEntity) { }
+    func editContextMenuButtonPressed(for task: TaskEntity) {
+        router.openTaskInfo(about: task)
+    }
+    
+    func shareContextMenuButtonPressed(for task: TaskEntity) {
+        router.openShareActivityVC(task: task)
+    }
     
     func numberOfTasks(in section: Int) -> Int {
         interactor.numberOfTasks(in: section)
