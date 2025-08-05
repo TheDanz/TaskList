@@ -9,6 +9,8 @@ protocol TaskListInteractor: AnyObject {
     func numberOfTasks(in section: Int?) -> Int
     func getTask(at: IndexPath) -> TaskEntity
     func deleteTask(at: IndexPath)
+    
+    func setIsDone(value: Bool, for task: TaskEntity)
 }
 
 final class TaskListInteractorImpl: NSObject, TaskListInteractor {
@@ -121,6 +123,10 @@ final class TaskListInteractorImpl: NSObject, TaskListInteractor {
         default:
             return "Задач"
         }
+    }
+    
+    func setIsDone(value: Bool, for task: TaskEntity) {
+        coreData.updateIsDone(with: value, for: task)
     }
 }
 

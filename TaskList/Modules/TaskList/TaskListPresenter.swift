@@ -13,6 +13,8 @@ protocol TaskListPresenter: AnyObject {
     func deleteTask(at: IndexPath)
     
     func didSelectTask(_ task: TaskEntity)
+    
+    func setIsDone(value: Bool, for task: TaskEntity)
 }
 
 final class TaskListPresenterImpl: TaskListPresenter {
@@ -61,5 +63,9 @@ final class TaskListPresenterImpl: TaskListPresenter {
     
     func didSelectTask(_ task: TaskEntity) {
         router.openTaskInfo(about: task)
+    }
+    
+    func setIsDone(value: Bool, for task: TaskEntity) {
+        interactor.setIsDone(value: value, for: task)
     }
 }

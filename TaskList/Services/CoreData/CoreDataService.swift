@@ -75,4 +75,19 @@ final class CoreDataService {
             print(error.localizedDescription)
         }
     }
+    
+    func updateIsDone(with value: Bool, for task: TaskEntity) {
+        let fetchRequest = TaskModel.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", task.id)
+        
+        do {
+            let results = try viewContext.fetch(fetchRequest)
+            if let taskToUpdate = results.first {
+                taskToUpdate.isDone = value
+                try viewContext.save()
+            }
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
 }
