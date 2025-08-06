@@ -75,6 +75,7 @@ final class TaskListPresenterImpl: TaskListPresenter {
     
     func createNewTaskPressed() {
         router.openEmptyTaskInfo()
+        view?.updateNumberOfTasksLabel(with: interactor.taskCountWithWord)
     }
     
     func updateSearch(with text: String?) {
