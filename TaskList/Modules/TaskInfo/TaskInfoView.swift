@@ -47,10 +47,13 @@ final class TaskInfoViewImpl: UIViewController, TaskInfoView {
     
     // MARK: - Inits
     
+    init() {
+        super.init(nibName: nil, bundle: nil)
+    }
+    
     init(task: TaskEntity) {
         super.init(nibName: nil, bundle: nil)
         self.task = task
-        configure(with: task)
     }
     
     required init?(coder: NSCoder) {
@@ -63,6 +66,15 @@ final class TaskInfoViewImpl: UIViewController, TaskInfoView {
         super.viewDidLoad()
         assambly.configure(view: self)
         setupUI()
+        
+        if task == nil {
+            let newTask = presenter.createEmptyTask()
+            self.task = newTask
+        }
+        
+        if let task {
+            configure(with: task)
+        }
     }
     
     // MARK: - UI

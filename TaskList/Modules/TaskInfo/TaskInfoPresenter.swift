@@ -3,6 +3,7 @@ protocol TaskInfoPresenter: AnyObject {
     
     func titleTextViewDidChange(with text: String, for task: TaskEntity)
     func descriptionTextViewDidChange(with text: String, for task: TaskEntity)
+    func createEmptyTask() -> TaskEntity
 }
 
 final class TaskInfoPresenterImpl: TaskInfoPresenter {
@@ -21,5 +22,9 @@ final class TaskInfoPresenterImpl: TaskInfoPresenter {
     
     func descriptionTextViewDidChange(with text: String, for task: TaskEntity) {
         interactor.descriptionTextViewDidChange(with: text, for: task)
+    }
+    
+    func createEmptyTask() -> TaskEntity {
+        interactor.createEmptyTask()
     }
 }

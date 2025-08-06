@@ -24,6 +24,18 @@ final class CoreDataService {
     
     // MARK: - Internal Methods
     
+    func createEmptyTask(title: String, description: String) -> TaskModel {
+        let taskModel = TaskModel(context: viewContext)
+        taskModel.id = UUID().uuidString
+        taskModel.title = title
+        taskModel.depiction = description
+        taskModel.creationDate = Date()
+        taskModel.isDone = false
+        
+        try? viewContext.save()
+        return taskModel
+    }
+    
     func createTask(_ task: TaskEntity) {
         let taskModel = TaskModel(context: viewContext)
         taskModel.id = UUID().uuidString

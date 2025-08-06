@@ -11,14 +11,23 @@ final class FooterView: UIView {
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
     
-    private lazy var rightImageView: UIImageView = .style {
+    private lazy var createNewTaskButton: UIButton = .style {
         let image = UIImage(systemName: "square.and.pencil")
-        $0.image = image
+        $0.setImage(image, for: .normal)
         $0.tintColor = .golden
+        $0.addTarget(self, action: #selector(self.createNewTaskButtonPressed), for: .touchUpInside)
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
+    
+    private var presenter: TaskListPresenter?
         
     // MARK: - Inits
+    
+    init(presenter: TaskListPresenter?) {
+        super.init(frame: .zero)
+        self.presenter = presenter
+        setupUI()
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -39,15 +48,23 @@ final class FooterView: UIView {
     
     private func setupView() {
         backgroundColor = .footerBackground
+        translatesAutoresizingMaskIntoConstraints = false
         addSubview(numberOfTasksLabel)
-        addSubview(rightImageView)
+        addSubview(createNewTaskButton)
+    }
+    
+    // MARK: - Private Methods
+    
+    @objc
+    func createNewTaskButtonPressed() {
+        presenter?.createNewTaskPressed()
     }
     
     // MARK: - AutoLayout
     
     private func setupAutoLayout() {
         setupNumberOfTasksLabelConstaints()
-        setupRightIconConstraints()
+        setupCreateNewTaskButtonConstraints()
     }
     
     private func setupNumberOfTasksLabelConstaints() {
@@ -55,10 +72,10 @@ final class FooterView: UIView {
         numberOfTasksLabel.topAnchor.constraint(equalTo: topAnchor, constant: 20.5).isActive = true
     }
     
-    private func setupRightIconConstraints() {
-        rightImageView.centerYAnchor.constraint(equalTo: numberOfTasksLabel.centerYAnchor).isActive = true
-        rightImageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -22).isActive = true
-        rightImageView.heightAnchor.constraint(equalToConstant: 24).isActive = true
-        rightImageView.widthAnchor.constraint(equalToConstant: 24).isActive = true
+    private func setupCreateNewTaskButtonConstraints() {
+        createNewTaskButton.centerYAnchor.constraint(equalTo: numberOfTasksLabel.centerYAnchor).isActive = true
+        createNewTaskButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -22).isActive = true
+        createNewTaskButton.heightAnchor.constraint(equalToConstant: 24).isActive = true
+        createNewTaskButton.widthAnchor.constraint(equalToConstant: 24).isActive = true
     }
 }

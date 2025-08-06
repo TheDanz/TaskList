@@ -28,13 +28,8 @@ final class TaskListViewImpl: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
     }
     
-    private lazy var searchTextField: SearchTextField = .style {
-        $0.translatesAutoresizingMaskIntoConstraints = false
-    }
-    
-    lazy var footerView: FooterView = .style {
-        $0.translatesAutoresizingMaskIntoConstraints = false
-    }
+    private lazy var searchTextField = SearchTextField()
+    private lazy var footerView = FooterView(presenter: presenter)
     
     private lazy var tasksTableView = UIView.style { (tableView: UITableView) in
         tableView.dataSource = self

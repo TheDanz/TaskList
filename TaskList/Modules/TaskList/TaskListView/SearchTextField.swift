@@ -30,6 +30,7 @@ final class SearchTextField: UITextField {
         backgroundColor = .searchTextFieldBackground
         textColor = .searchTextFieldElements
         font = .systemFont(ofSize: 17, weight: .regular)
+        translatesAutoresizingMaskIntoConstraints = false
     }
     
     private func setupLeftView() {

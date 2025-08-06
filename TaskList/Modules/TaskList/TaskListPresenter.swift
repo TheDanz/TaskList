@@ -15,6 +15,8 @@ protocol TaskListPresenter: AnyObject {
     func didSelectTask(_ task: TaskEntity)
     
     func setIsDone(value: Bool, for task: TaskEntity)
+    
+    func createNewTaskPressed()
 }
 
 final class TaskListPresenterImpl: TaskListPresenter {
@@ -67,5 +69,9 @@ final class TaskListPresenterImpl: TaskListPresenter {
     
     func setIsDone(value: Bool, for task: TaskEntity) {
         interactor.setIsDone(value: value, for: task)
+    }
+    
+    func createNewTaskPressed() {
+        router.openEmptyTaskInfo()
     }
 }
