@@ -67,6 +67,11 @@ final class TaskListViewImpl: UIViewController {
         presenter.updateSearch(with: searchText)
     }
     
+    @objc
+    private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
     // MARK: - UI
     
     private func setupUI() {
@@ -80,6 +85,10 @@ final class TaskListViewImpl: UIViewController {
         view.addSubview(searchTextField)
         view.addSubview(footerView)
         view.addSubview(tasksTableView)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
     }
     
     // MARK: - AutoLayout

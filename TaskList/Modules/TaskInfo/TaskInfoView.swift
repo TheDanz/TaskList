@@ -20,6 +20,14 @@ final class TaskInfoViewImpl: UIViewController, TaskInfoView {
     
     // MARK: - Views
     
+    private lazy var scrollView: UIScrollView = .style {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+    }
+
+    private lazy var contentView: UIView = .style {
+        $0.translatesAutoresizingMaskIntoConstraints = false
+    }
+    
     private lazy var titleTextView: UITextView = .style {
         $0.font = UIFont.systemFont(ofSize: 34, weight: .bold)
         $0.textColor = .mainText
@@ -77,6 +85,13 @@ final class TaskInfoViewImpl: UIViewController, TaskInfoView {
         }
     }
     
+    // MARK: - Private Methods
+    
+    @objc
+    private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
     // MARK: - UI
     
     private func configure(with task: TaskEntity) {
@@ -89,46 +104,75 @@ final class TaskInfoViewImpl: UIViewController, TaskInfoView {
  
     private func setupUI() {
         setupView()
+        setupContentView()
         setupNavigationController()
         setupAutoLayout()
     }
     
     private func setupView() {
         view.backgroundColor = .mainBackground
-        view.addSubview(titleTextView)
-        view.addSubview(creationDateLabel)
-        view.addSubview(descriptionTextView)
+        view.addSubview(scrollView)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    private func setupContentView() {
+        scrollView.addSubview(contentView)
+        contentView.addSubview(titleTextView)
+        contentView.addSubview(creationDateLabel)
+        contentView.addSubview(descriptionTextView)
     }
     
     private func setupNavigationController() {
         navigationController?.navigationBar.isHidden = false
+        navigationController?.navigationBar.barTintColor = .mainBackground
         navigationController?.navigationBar.tintColor = .golden
     }
     
     // MARK: - AutoLayout
     
     private func setupAutoLayout() {
+        setupScrollViewConstraints()
+        setupContentViewConstraints()
         setupTitleTextViewConstraints()
         setupCreationDateLabelConstraints()
         setupDescriptionTextViewConstraints()
     }
     
+    private func setupScrollViewConstraints() {
+        scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+    }
+
+    private func setupContentViewConstraints() {
+        contentView.topAnchor.constraint(equalTo: scrollView.topAnchor).isActive = true
+        contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor).isActive = true
+        contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor).isActive = true
+        contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor).isActive = true
+        contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor).isActive = true
+    }
+    
     private func setupTitleTextViewConstraints() {
-        titleTextView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8).isActive = true
-        titleTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
-        titleTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
+        titleTextView.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 8).isActive = true
+        titleTextView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20).isActive = true
+        titleTextView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
     }
     
     private func setupCreationDateLabelConstraints() {
         creationDateLabel.topAnchor.constraint(equalTo: titleTextView.bottomAnchor, constant: 8).isActive = true
-        creationDateLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25).isActive = true
-        creationDateLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
+        creationDateLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 25).isActive = true
+        creationDateLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
     }
     
     private func setupDescriptionTextViewConstraints() {
         descriptionTextView.topAnchor.constraint(equalTo: creationDateLabel.bottomAnchor, constant: 16).isActive = true
-        descriptionTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
-        descriptionTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
+        descriptionTextView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20).isActive = true
+        descriptionTextView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
+        descriptionTextView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20).isActive = true
     }
 }
 
