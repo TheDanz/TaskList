@@ -28,7 +28,10 @@ final class TaskListViewImpl: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
     }
     
-    private lazy var searchTextField = SearchTextField()
+    private lazy var searchTextField: SearchTextField = .style {
+        $0.delegate = self
+        $0.addTarget(self, action: #selector(self.searchTextChanged), for: .editingChanged)
+    }
     private lazy var footerView = FooterView(presenter: presenter)
     
     private lazy var tasksTableView = UIView.style { (tableView: UITableView) in
@@ -54,6 +57,14 @@ final class TaskListViewImpl: UIViewController {
         setupUI()
 
         Task { await presenter.loadInitialTasks() }
+    }
+    
+    // MARK: - Private Methods
+    
+    @objc
+    private func searchTextChanged() {
+        guard let searchText = searchTextField.text?.lowercased() else { return }
+        presenter.updateSearch(with: searchText)
     }
     
     // MARK: - UI
@@ -108,6 +119,8 @@ final class TaskListViewImpl: UIViewController {
     }
 }
 
+// MARK: - TaskListView
+
 extension TaskListViewImpl: TaskListView {
     func reloadData() {
         DispatchQueue.main.async { [weak self] in
@@ -125,6 +138,8 @@ extension TaskListViewImpl: TaskListView {
         tasksTableView.deleteRows(at: at, with: .automatic)
     }
 }
+
+// MARK: - UITableViewDelegate, UITableViewDataSource
 
 extension TaskListViewImpl: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -174,5 +189,14 @@ extension TaskListViewImpl: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let task = presenter.getTask(at: indexPath)
         presenter.didSelectTask(task)
+    }
+}
+
+// MARK: - UITextFieldDelegate
+
+extension TaskListViewImpl: UITextFieldDelegate {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        searchTextChanged()
+        return true
     }
 }

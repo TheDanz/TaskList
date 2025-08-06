@@ -17,6 +17,8 @@ protocol TaskListPresenter: AnyObject {
     func setIsDone(value: Bool, for task: TaskEntity)
     
     func createNewTaskPressed()
+    
+    func updateSearch(with text: String?)
 }
 
 final class TaskListPresenterImpl: TaskListPresenter {
@@ -73,5 +75,10 @@ final class TaskListPresenterImpl: TaskListPresenter {
     
     func createNewTaskPressed() {
         router.openEmptyTaskInfo()
+    }
+    
+    func updateSearch(with text: String?) {
+        interactor.updateSearch(with: text)
+        view?.reloadData()
     }
 }

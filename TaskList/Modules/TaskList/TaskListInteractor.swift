@@ -11,6 +11,7 @@ protocol TaskListInteractor: AnyObject {
     func deleteTask(at: IndexPath)
     
     func setIsDone(value: Bool, for task: TaskEntity)
+    func updateSearch(with text: String?)
 }
 
 final class TaskListInteractorImpl: NSObject, TaskListInteractor {
@@ -24,6 +25,8 @@ final class TaskListInteractorImpl: NSObject, TaskListInteractor {
     private var fetchLimit = 1000
     var fetchedResultsController: NSFetchedResultsController<TaskModel>!
     
+    private var currentSearchText: String? = nil
+
     // MARK: Inits
             
     override init() {
@@ -87,13 +90,24 @@ final class TaskListInteractorImpl: NSObject, TaskListInteractor {
         coreData.deleteTask(object: taskModel)
     }
     
+    func updateSearch(with text: String?) {
+        currentSearchText = text
+        setupFetchedResultsContoller(with: text)
+    }
+    
     // MARK: - Private Methods
     
-    private func setupFetchedResultsContoller() {
+    private func setupFetchedResultsContoller(with searchText: String? = nil) {
         let fetchRequest: NSFetchRequest<TaskModel> = TaskModel.fetchRequest()
         let sortDescriptor = NSSortDescriptor(key: "id", ascending: true)
         fetchRequest.sortDescriptors = [sortDescriptor]
         fetchRequest.fetchLimit = fetchLimit
+        
+        if let searchText = searchText, !searchText.isEmpty {
+            fetchRequest.predicate = NSPredicate(format: "title CONTAINS[c] %@", searchText)
+        } else {
+            fetchRequest.predicate = nil
+        }
         
         fetchedResultsController = NSFetchedResultsController(
             fetchRequest: fetchRequest,
